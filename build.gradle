@@ -1,0 +1,102 @@
+import java.nio.charset.StandardCharsets
+
+plugins {
+    id 'java'
+    id 'base'
+    id 'java-library'
+    id 'pmd'
+    id 'net.ltgt.errorprone' version '0.0.13'
+    id 'com.diffplug.gradle.spotless' version '3.10.0'
+    id 'com.github.ben-manes.versions' version '0.17.0'
+    id 'io.qameta.allure' version '2.5'
+}
+
+group = 'package'
+version = '1.0.0'
+description = 'Tnkoff Automation testing'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+
+ext {
+    encoding = StandardCharsets.UTF_8.toString()
+    log4jVersion = '2.10.0'
+    junitJupiterVersion = '5.1.0'
+    allureVersion = '2.6.0'
+}
+
+tasks.withType(JavaCompile) {
+    options.incremental = true
+    options.encoding = encoding
+    options.compilerArgs = options.compilerArgs + ["-Xep:ParameterName:OFF"]
+}
+
+tasks.withType(Javadoc) {
+    options.encoding = encoding
+}
+
+allure {
+    autoconfigure = true
+    version = '2.6.0'
+    useJUnit5
+}
+
+allprojects {
+    apply plugin: 'idea'
+    idea {
+        module {
+            outputDir file('build/classes/production')
+            testOutputDir file('build/classes/test')
+        }
+    }
+}
+
+repositories {
+    jcenter()
+    mavenCentral()
+}
+dependencies {
+    implementation("org.projectlombok:lombok:1.16.20")
+    implementation("com.codeborne:selenide:4.12.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
+    compile("org.junit.jupiter:junit-jupiter-params:$junitJupiterVersion")
+    compile("io.qameta.allure:allure-selenide:$allureVersion")
+    testImplementation("org.assertj:assertj-core:3.9.1")
+    compile("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
+    compile("io.qameta.allure:allure-junit5:$allureVersion")
+    testRuntimeOnly("org.apache.logging.log4j:log4j-core:$log4jVersion")
+    testRuntimeOnly("org.apache.logging.log4j:log4j-jul:$log4jVersion")
+    testRuntimeOnly("org.apache.logging.log4j:log4j-jcl:$log4jVersion")
+    testRuntimeOnly("org.apache.logging.log4j:log4j-slf4j-impl:$log4jVersion")
+}
+
+test {
+    useJUnitPlatform() {}
+
+testLogging {
+    events 'passed', 'skipped', 'failed'
+}
+
+reports {
+    junitXml.enabled = true
+    html.enabled = true
+}
+
+testLogging.showStandardStreams = true
+systemProperties = System.properties + [
+    'file.encoding'             : encoding,
+    'allure.results.directory'  : 'build/allure-results',
+    'java.util.logging.manager' : 'org.apache.logging.log4j.jul.LogManager'
+] as Map<String, ?>
+maxParallelForks = (int) (Runtime.runtime.availableProcessors().intdiv(2) ?: 1)
+forkEvery = 4
+}
+
+task customAllureReport(type: io.qameta.allure.gradle.task.AllureReport) {
+}
+
+//tasks.withType(Test)*.finalizedBy customAllureReport
+
+wrapper.gradleVersion = '4.10.2'
+
+
+

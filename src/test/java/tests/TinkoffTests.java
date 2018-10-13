@@ -19,16 +19,19 @@ public class TinkoffTests extends BaseTest {
     @Description("Simple check payments")
     @Feature("Tinkoff main test")
     @Test
-    public void when_DoingTestTask_Expect_ToDoItPerfect(){
+    public void when_DoingTestTask_Expect_ToDoItPerfect() {
 
         //1.
         open(Configuration.baseUrl);
+
         //2.
         ElementsCollection footerLinks = $$(".footer__Footer-common__link_383TZ");
         SelenideElement paymentLink = footerLinks.findBy(text("Платежи"));
         paymentLink.click();
+
         //4.
         $(byText("ЖКХ")).click();
+
         //3.
         if ($(".Link__link_3805p.Link__link_color_blue_10po6.Link__link_type_simple_l_2v_.Link__link_nodecorated_2q71R").getText() != "Москве"){
             $(".PaymentsCatalogHeader__regionSelect_1Muyd").click();
@@ -42,61 +45,80 @@ public class TinkoffTests extends BaseTest {
 
         //5.
         ElementsCollection itemProvider = $$(by("data-qa-file", "UIMenuItemProvider"));
-
         String provider = itemProvider.first().getText();
         itemProvider.first()
             .shouldHave(text(provider))
             .click();
-
-        String jkhTitle = title();
+        String jkhTitle = $(".Text__text_alignDesktop_left_1xu1i").getText();
 
         //6.
         ElementsCollection tabs = $$(".Tab__tab_23tRq");
         tabs.findBy(text("оплатить")).click();
-//
-//        //7.
-//        //Код плательщика
-//        $(byName("provider-payerCode")).setValue("1");
-//        tabs.findBy(text("оплатить")).click();
-//        $(by("data-qa-file", "UIFormRowError")).shouldHave(text("Поле неправильно заполнено"));
-//        refresh();
-//        $(byName("provider-payerCode")).setValue("1").setValue(null);
-//        tabs.findBy(text("оплатить")).click();
-//        $(by("data-qa-file", "UIFormRowError")).shouldHave(text("Поле обязательное"));
-//        refresh();
-//
-//        //За какой период оплачиваете коммунальные услуги
-//        $(byName("provider-period")).setValue("1");
-//        tabs.findBy(text("оплатить")).click();
-//        $(by("data-qa-file", "UIFormRowError")).shouldHave(text("Поле заполнено некорректно"));
-//        refresh();
-//        $(byName("provider-period")).setValue("33.3333");
-//        tabs.findBy(text("оплатить")).click();
-//        $(by("data-qa-file", "UIFormRowError")).shouldHave(text("Поле заполнено некорректно"));
-//        refresh();
-//        $(byName("provider-period")).setValue("1").setValue(null);
-//        tabs.findBy(text("оплатить")).click();
-//        $(by("data-qa-file", "UIFormRowError")).shouldHave(text("Поле обязательное"));
-//        refresh();
-//
-//
-//
-//        ElementsCollection otherInputs = $$(".Input__valueContent_primary_3sxF0");
-//        //Сумма добровольного страхования
-//        otherInputs.get(0).setValue("-2");
-//        tabs.findBy(text("оплатить")).click();
-//        $(by("data-qa-file", "UIFormRowError")).shouldHave(text("Поле заполнено неверно"));
-//        refresh();
-//
-//        otherInputs.get(0).setValue("999999999999999999999999999999");
-//        tabs.findBy(text("оплатить")).click();
-//        $(by("data-qa-file", "UIFormRowError")).shouldHave(text("Поле заполнено неверно"));
-//        refresh();
-//
-//        $(".ui-form__fieldset.ui-form__fieldset_inline.ui-form__row_amount").click();
-//        otherInputs.get(1).setValue("-2");
-//        tabs.findBy(text("оплатить")).click();
-//        $(by("data-qa-file", "UIFormRowError")).shouldHave(text("Поле заполнено неверно"));
+
+        //7.
+        //Код плательщика
+        $(byName("provider-payerCode")).setValue("1");
+        tabs.findBy(text("оплатить")).click();
+        $(by("data-qa-file", "UIFormRowError")).shouldHave(text("Поле неправильно заполнено"));
+        refresh();
+        $(byName("provider-payerCode")).setValue("1").setValue(null);
+        tabs.findBy(text("оплатить")).click();
+        $(by("data-qa-file", "UIFormRowError")).shouldHave(text("Поле обязательное"));
+        refresh();
+
+        //За какой период оплачиваете коммунальные услуги
+        $(byName("provider-period")).setValue("1");
+        tabs.findBy(text("оплатить")).click();
+        $(by("data-qa-file", "UIFormRowError")).shouldHave(text("Поле заполнено некорректно"));
+        refresh();
+
+        $(byName("provider-period")).setValue("33.3333");
+        tabs.findBy(text("оплатить")).click();
+        $(by("data-qa-file", "UIFormRowError")).shouldHave(text("Поле заполнено некорректно"));
+        refresh();
+
+        $(byName("provider-period")).setValue("1").setValue(null);
+        tabs.findBy(text("оплатить")).click();
+        $(by("data-qa-file", "UIFormRowError")).shouldHave(text("Поле обязательное"));
+        refresh();
+
+        ElementsCollection otherInputs = $$(".Input__valueContent_primary_3sxF0");
+        //Сумма добровольного страхования
+        otherInputs.first().setValue("-2");
+        tabs.findBy(text("оплатить")).click();
+        $(by("data-qa-file", "UIFormRowError")).shouldHave(text("Поле заполнено неверно"));
+        refresh();
+
+        otherInputs.first().setValue("999999999999999999999999999999");
+        tabs.findBy(text("оплатить")).click();
+        $(by("data-qa-file", "UIFormRowError")).shouldHave(text("Поле заполнено неверно"));
+        refresh();
+
+        //Сумма платежа
+        $(".ui-form__fieldset.ui-form__fieldset_inline.ui-form__row_amount").click();
+        otherInputs.get(1).setValue("-2");
+        tabs.findBy(text("оплатить")).click();
+        $(by("data-qa-file", "UIFormRowError")).shouldHave(text("Поле заполнено неверно"));
+        refresh();
+
+        $(".ui-form__fieldset.ui-form__fieldset_inline.ui-form__row_amount").click();
+        otherInputs.get(1).setValue("5");
+        tabs.findBy(text("оплатить")).click();
+        $(by("data-qa-file", "UIFormRowError")).shouldHave(text("Минимум — 10 \u20BD"));
+        refresh();
+
+        $(".ui-form__fieldset.ui-form__fieldset_inline.ui-form__row_amount").click();
+        otherInputs.get(1).setValue("16000");
+        tabs.findBy(text("оплатить")).click();
+        $(by("data-qa-file", "UIFormRowError")).shouldHave(text("Максимум — 15 000 \u20BD"));
+        refresh();
+
+        $(".ui-form__fieldset.ui-form__fieldset_inline.ui-form__row_amount").click();
+        otherInputs.get(1).setValue("500");
+        tabs.findBy(text("оплатить")).click();
+        otherInputs.first().setValue("600");
+        tabs.findBy(text("оплатить")).click();
+        $(by("data-qa-file", "UIFormRowError")).shouldHave(text("Сумма добровольного страхования не может быть больше итоговой суммы."));
 
 
         //8.
@@ -111,8 +133,7 @@ public class TinkoffTests extends BaseTest {
         gridColumn.first().click();
 
         //11.
-        refresh();
-        Assertions.assertEquals(title(), jkhTitle);
+        $(".Text__text_alignDesktop_left_1xu1i").shouldHave(text(jkhTitle));
 
         //12.
         paymentLink.click();
